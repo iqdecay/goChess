@@ -19,7 +19,7 @@ type ChessPieceType struct {
 }
 
 type ChessPiece struct {
-	chesspiecetype ChessPieceType
+	chessPieceType ChessPieceType
 	colour         string
 	id             int // each piece is identified by its unique id
 	number         int // over the number of piece of a certain type
@@ -38,11 +38,18 @@ func Change(c Colour) Colour {
 	return c
 }
 
+func PrintBoard(b [8][8]string) {
+	for _, line := range b {
+		fmt.Println(line)
+	}
+}
 func TranslateMove(userMove string, lettersToInt map[byte]int) [4]int {
-	a := lettersToInt[userMove[0]]
+	a := lettersToInt[userMove[0]] 
 	b, _ := strconv.Atoi(string(userMove[1]))
-	c := lettersToInt[userMove[2]]
-	d, _ := strconv.Atoi(string(userMove[3]))
+	b -- 
+	c := lettersToInt[userMove[2]] 
+	d, _ := strconv.Atoi(string(userMove[3])) 
+	d --
 	return [4]int{a, b, c, d}
 }
 
@@ -57,7 +64,21 @@ func GetUserInput(c Colour) (userMove string) {
 	}
 }
 
-//func playMove(move [4]int,board [8][8]int,boardRep [8][8]string, chessGame []ChessPiece) {
+func playMove(move [4]int, board [8][8]int, boardRep [8][8]string, chessGame map[int]ChessPiece) ([8][8]int, [8][8]string) {
+	originLetter := move[0]
+	originNumber := move[1]
+	originNumber = 7 - originNumber
+	targetLetter := move[2]
+	targetNumber := move[3]
+	targetNumber = 7 - targetNumber
+	movedPieceId := board[originNumber][originLetter]
+	movedPiece := chessGame[movedPieceId]
+	board[originNumber][originLetter] = 0
+	boardRep[originNumber][originLetter] = "_"
+	board[targetNumber][targetLetter] = movedPieceId
+	boardRep[targetNumber][targetLetter] = movedPiece.chessPieceType.asciiRep
+	return board, boardRep
+}
 
 func main() {
 	//--------------------- GAME INITIALIZATION------------------------------
@@ -105,7 +126,7 @@ func main() {
 		for i := 0; i < len(pieceSlice); i++ {
 			pieceType := pieceSlice[i]
 			for j := 0; j < number; j++ {
-				id_white := len(chessGame) + 1
+				id_white := len(chessGame) + 2
 				id_black := id_white + 1
 				//We create each piece for one colour
 				chessGame[id_white] = ChessPiece{pieceType, "white", id_white, j}
@@ -117,7 +138,7 @@ func main() {
 	for _, piece := range chessGame {
 		id := piece.id
 		number := piece.number
-		pieceType := piece.chesspiecetype
+		pieceType := piece.chessPieceType
 		colour := piece.colour
 		// Depending on its number, we place it differently
 		j := pieceType.originalX[number]
@@ -159,9 +180,12 @@ func main() {
 						continueGame = false
 				turnColour changes color
 		*/
+		PrintBoard(boardRep)
 		userMove := GetUserInput(turnColour)
 		coordinateMove := TranslateMove(userMove, lettersToInt)
-		playMove(coordinateMove)
+		board, boardRep = playMove(coordinateMove, board, boardRep, chessGame)
+
+
 		//if ThereIsCheckmate(board) {
 		//continueGame = false
 		//fmt.Println("%s won the game !", turnColour)
