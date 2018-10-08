@@ -5,6 +5,7 @@ import (
 	"bufio"
 	"os"
 	"strings"
+	"strconv"
 )
 type ChessPieceType struct {
 	name string
@@ -27,20 +28,31 @@ type Colour struct {
 	colour string
 }
 
-func Change(c Colour)  {
+func Change(c Colour) Colour {
 	if c.colour == "white" {
 		c.colour = "black"
 	} else{
 		c.colour = "white"
 	}
+	return c
 }
+
+func TranslateMove(userMove string, lettersToInt map[byte]int) ([4]int){
+	a := lettersToInt[userMove[0]]
+	b, _ := strconv.Atoi(string(userMove[1]))
+	c := lettersToInt[userMove[2]]
+	d, _ := strconv.Atoi(string(userMove[3]))
+	return [4]int{a,b,c,d}
+}
+
+
 
 func GetUserInput(c Colour) (userMove string) {
 	reader := bufio.NewReader(os.Stdin)
 	fmt.Printf("Enter the next %s move, then press Enter:\n",c.colour)
-	userMove, err = reader.ReadString('\n')
+	userMove, err := reader.ReadString('\n')
 	if err != nil {
-		return GetUserInput(c.colour)
+		return GetUserInput(c)
 	}else {
 		return userMove
 	}
@@ -70,13 +82,12 @@ func main() {
 	queen_list := append(square_list, 0)
 
 	//Create the mapping between moves and coordinates
-	lettersToInt := make(map[byte]int])
+	lettersToInt := make(map[byte]int)
 	letters := [8]byte{'a','b','c','d','e','f','g','h'}
 	for index, letter := range letters {
 		lettersToInt[letter] = index
 	}
 
-	
 
 	//Creating the different types of pieces
 	bishop := ChessPieceType{"bishop", square_list, "B", []int{2, 5}, []int{0, 7}}
@@ -151,13 +162,15 @@ func main() {
 					continueGame = false
 			turnColour changes color
 		*/
-		userMove = GetUserInput(turnColour)
-		playMove(userMove)
-		if ThereIsCheckmate(board) {
-			continueGame = false
-			fmt.Println("%s won the game !", turnColour)
-		}
-		Change(turnColour)
+		userMove := GetUserInput(turnColour)
+		coordinateMove := TranslateMove(userMove, lettersToInt)
+		fmt.Println(coordinateMove)
+	       /* playMove(coordinateMove)*/
+		//if ThereIsCheckmate(board) {
+			//continueGame = false
+			//fmt.Println("%s won the game !", turnColour)
+		//}
+		turnColour = Change(turnColour)
 		
 
 
