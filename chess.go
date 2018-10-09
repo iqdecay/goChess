@@ -55,7 +55,7 @@ func TranslateMove(userMove string, lettersToInt map[byte]int) [4]int {
 
 func GetUserInput(c Colour) (userMove string) {
 	reader := bufio.NewReader(os.Stdin)
-	fmt.Printf("Enter the next %s move, then press Enter:\n", c.colour)
+	fmt.Printf("Enter the next %s move, under lnln form, where l is a letter and n a number, then press Enter:\n", c.colour)
 	userMove, err := reader.ReadString('\n')
 	if err != nil {
 		return GetUserInput(c)
@@ -73,10 +73,14 @@ func playMove(move [4]int, board [8][8]int, boardRep [8][8]string, chessGame map
 	targetNumber = 7 - targetNumber
 	movedPieceId := board[originNumber][originLetter]
 	movedPiece := chessGame[movedPieceId]
+	if movedPiece.colour == "white" {
+		boardRep[targetNumber][targetLetter] = strings.ToLower(movedPiece.chessPieceType.asciiRep)
+	} else {
+		boardRep[targetNumber][targetLetter] = movedPiece.chessPieceType.asciiRep
+	}
 	board[originNumber][originLetter] = 0
 	boardRep[originNumber][originLetter] = "_"
 	board[targetNumber][targetLetter] = movedPieceId
-	boardRep[targetNumber][targetLetter] = movedPiece.chessPieceType.asciiRep
 	return board, boardRep
 }
 
@@ -153,7 +157,7 @@ func main() {
 		boardRep[i][j] = pieceType.asciiRep
 		// if the piece is white, put it in lowercase
 		if colour == "white" {
-			boardRep[i][j] = "w" + strings.ToLower(pieceType.asciiRep)
+			boardRep[i][j] = strings.ToLower(pieceType.asciiRep)
 		}
 		board[i][j] = id
 	}
