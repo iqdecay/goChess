@@ -44,9 +44,11 @@ func PrintBoard(b [8][8]string) {
 }
 func TranslateMove(userMove string, lettersToInt map[byte]int) ([4]int, bool) {
 	a := lettersToInt[userMove[0]]
+	a--
 	b, _ := strconv.Atoi(string(userMove[1]))
 	b--
 	c := lettersToInt[userMove[2]]
+	c--
 	d, _ := strconv.Atoi(string(userMove[3]))
 	d--
 	translatedMove := [4]int{a, b, c, d}
@@ -58,14 +60,14 @@ func TranslateMove(userMove string, lettersToInt map[byte]int) ([4]int, bool) {
 	return translatedMove, false
 }
 
-func GetUserInput(c Colour) (userMove string) {
+func GetUserInput(c Colour) (userMove string, wrongFormat bool) {
 	reader := bufio.NewReader(os.Stdin)
 	fmt.Printf("Enter the next %s move, under lnln form, where l is a letter and n a number, then press Enter:\n", c.colour)
 	userMove, err := reader.ReadString('\n')
-	if err != nil {
-		return GetUserInput(c)
+	if err == nil && len(userMove)==5  { // The input takes the newline into account
+		return userMove, false
 	} else {
-		return userMove
+		return "", true
 	}
 }
 
@@ -105,7 +107,7 @@ func main() {
 	lettersToInt := make(map[byte]int)
 	letters := [8]byte{'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'}
 	for index, letter := range letters {
-		lettersToInt[letter] = index
+		lettersToInt[letter] = index + 1
 	}
 
 	//Creating the different types of pieces
@@ -167,12 +169,16 @@ func main() {
 	for continueGame {
 		PrintBoard(boardRep)
 		isMoveFalse := false
-		userMove := GetUserInput(turnColour)
+		userMove, wrongFormat := GetUserInput(turnColour)
+		for wrongFormat {
+			fmt.Println("Please respect the move format !")
+			userMove, wrongFormat = GetUserInput(turnColour)
+		}
+
 		coordinateMove, isMoveFalse := TranslateMove(userMove, lettersToInt)
-		for isMoveFalse {
+		if isMoveFalse {
 			fmt.Println("Incorrect move entered !")
-			userMove = GetUserInput(turnColour)
-			coordinateMove, isMoveFalse = TranslateMove(userMove, lettersToInt)
+			continue
 		}
 		board, boardRep = playMove(coordinateMove, board, boardRep, chessGame)
 
