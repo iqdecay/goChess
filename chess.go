@@ -12,7 +12,6 @@ type ChessPieceType struct {
 	name string
 	// if the vertical variation of a move is i, and the horizontal one is j,
 	// then if i*j is not in "moves", then it is not a legal move for the piece
-	moves     []int
 	asciiRep  string // used for board representation in CLI
 	originalX []int  // the original x positions of a ChessPiece
 	originalY []int  // the original y positions of a ChessPiece
@@ -43,14 +42,20 @@ func PrintBoard(b [8][8]string) {
 		fmt.Println(line)
 	}
 }
-func TranslateMove(userMove string, lettersToInt map[byte]int) [4]int {
+func TranslateMove(userMove string, lettersToInt map[byte]int) ([4]int,bool){
 	a := lettersToInt[userMove[0]] 
 	b, _ := strconv.Atoi(string(userMove[1]))
 	b -- 
 	c := lettersToInt[userMove[2]] 
 	d, _ := strconv.Atoi(string(userMove[3])) 
 	d --
-	return [4]int{a, b, c, d}
+	translatedMove := [4]int{a,b,c,d}
+	for _, i := range translatedMove {
+		if i < 0 || i > 7 {
+			return translatedMove, true
+		}
+	}
+	return translatedMove, false
 }
 
 func GetUserInput(c Colour) (userMove string) {
@@ -96,13 +101,6 @@ func main() {
 
 		}
 	}
-	//Creating the complex moves
-	var squareList = []int{}
-	for i := 1; i < 9; i++ {
-		squareList = append(squareList, i*i, -i*i)
-	}
-	queenList := append(squareList, 0)
-
 	//Create the mapping between moves and coordinates
 	lettersToInt := make(map[byte]int)
 	letters := [8]byte{'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'}
@@ -111,12 +109,12 @@ func main() {
 	}
 
 	//Creating the different types of pieces
-	bishop := ChessPieceType{"bishop", squareList, "B", []int{2, 5}, []int{0, 7}}
-	knight := ChessPieceType{"knight", []int{-2, 2}, "H", []int{1, 6}, []int{0, 7}}
-	king := ChessPieceType{"king", []int{-1, 0, 1}, "K", []int{4}, []int{0, 7}}
-	queen := ChessPieceType{"queen", queenList, "Q", []int{3}, []int{0, 7}}
-	tower := ChessPieceType{"tower", []int{0}, "T", []int{0, 7}, []int{0, 7}}
-	pawn := ChessPieceType{"pawn", []int{-1, 0, 1}, "P", []int{0, 1, 2, 3, 4, 5, 6, 7}, []int{1, 6}}
+	bishop := ChessPieceType{"bishop", "B", []int{2, 5}, []int{0, 7}}
+	knight := ChessPieceType{"knight", "H", []int{1, 6}, []int{0, 7}}
+	king := ChessPieceType{"king", "K", []int{4}, []int{0, 7}}
+	queen := ChessPieceType{"queen", "Q", []int{3}, []int{0, 7}}
+	tower := ChessPieceType{"tower", "T", []int{0, 7}, []int{0, 7}}
+	pawn := ChessPieceType{"pawn", "P", []int{0, 1, 2, 3, 4, 5, 6, 7}, []int{1, 6}}
 
 	//Each pieces appears a certain number of time
 	chessSet := make(map[int][]ChessPieceType)
@@ -185,8 +183,15 @@ func main() {
 				turnColour changes color
 		*/
 		PrintBoard(boardRep)
+		isMoveFalse := false
 		userMove := GetUserInput(turnColour)
-		coordinateMove := TranslateMove(userMove, lettersToInt)
+		coordinateMove, isMoveFalse := TranslateMove(userMove, lettersToInt)
+		fmt.Println(coordinateMove)
+		for isMoveFalse {
+			fmt.Println("Entered the loop")
+			userMove = GetUserInput(turnColour)
+			coordinateMove, isMoveFalse = TranslateMove(userMove, lettersToInt)
+		}
 		board, boardRep = playMove(coordinateMove, board, boardRep, chessGame)
 
 
