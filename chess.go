@@ -42,14 +42,14 @@ func PrintBoard(b [8][8]string) {
 		fmt.Println(line)
 	}
 }
-func TranslateMove(userMove string, lettersToInt map[byte]int) ([4]int,bool){
-	a := lettersToInt[userMove[0]] 
+func TranslateMove(userMove string, lettersToInt map[byte]int) ([4]int, bool) {
+	a := lettersToInt[userMove[0]]
 	b, _ := strconv.Atoi(string(userMove[1]))
-	b -- 
-	c := lettersToInt[userMove[2]] 
-	d, _ := strconv.Atoi(string(userMove[3])) 
-	d --
-	translatedMove := [4]int{a,b,c,d}
+	b--
+	c := lettersToInt[userMove[2]]
+	d, _ := strconv.Atoi(string(userMove[3]))
+	d--
+	translatedMove := [4]int{a, b, c, d}
 	for _, i := range translatedMove {
 		if i < 0 || i > 7 {
 			return translatedMove, true
@@ -165,35 +165,16 @@ func main() {
 	continueGame := true          // Will be false whenever there is a checkmate
 	turnColour := Colour{"white"} // Holds the color of the next player to play a move
 	for continueGame {
-		/*
-			The structure will be as follow :
-				°play move
-					if move illegal:  // for now a move is legal iff
-					it can perform it, if it places you in a check
-					situation, it is not mentioned
-					The legality of the move should be checked all at once
-						return to °
-					if move is eating a piece :
-						eat the piece (remove eaten piece)
-					update position due to move
-				if move now is a check
-					say "check"
-					if checkmate :
-						continueGame = false
-				turnColour changes color
-		*/
 		PrintBoard(boardRep)
 		isMoveFalse := false
 		userMove := GetUserInput(turnColour)
 		coordinateMove, isMoveFalse := TranslateMove(userMove, lettersToInt)
-		fmt.Println(coordinateMove)
 		for isMoveFalse {
-			fmt.Println("Entered the loop")
+			fmt.Println("Incorrect move entered !")
 			userMove = GetUserInput(turnColour)
 			coordinateMove, isMoveFalse = TranslateMove(userMove, lettersToInt)
 		}
 		board, boardRep = playMove(coordinateMove, board, boardRep, chessGame)
-
 
 		//if ThereIsCheckmate(board) {
 		//continueGame = false
