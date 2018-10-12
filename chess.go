@@ -10,8 +10,6 @@ import (
 
 type ChessPieceType struct {
 	name string
-	// if the vertical variation of a move is i, and the horizontal one is j,
-	// then if i*j is not in "moves", then it is not a legal move for the piece
 	asciiRep  string // used for board representation in CLI
 	originalX []int  // the original x positions of a ChessPiece
 	originalY []int  // the original y positions of a ChessPiece
