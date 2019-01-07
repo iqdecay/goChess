@@ -15,9 +15,11 @@ const (
 	Black = iota
 )
 
+var colours = map[int]string{0: "white", 1: "black"}
+
 var lettersToInt = map[string]int{"a": 0, "b": 1, "c": 2, "d": 3, "e": 4, "f": 5, "g": 6, "h": 7}
 
-var validInput = regexp.MustCompile(`([a-h][1-8]){2}`)
+var validInput = regexp.MustCompile(`([a-h][1-8]) ([a-h][1-8])`)
 
 type Game struct {
 	colour Color
@@ -50,18 +52,19 @@ func (g Game) represent() string {
 	return display
 }
 
-func getUserInput() (string, error) {
+func getUserInput(c int) (string, error) {
 	reader := bufio.NewReader(os.Stdin)
-	fmt.Printf("Enter the next move, under lnln form, where l is a letter and n a number, then press Enter:\n")
+	colour := colours[c]
+	fmt.Printf("Enter the next %s move (format a1 h8), then press Enter:\n", colour)
 	userMove, err := reader.ReadString('\n')
 	if err != nil {
 		return "", fmt.Errorf("the input couldn't be read")
-	} else if len(userMove) > 5 {
+	} else if len(userMove) > 6 {
 		return "", fmt.Errorf("the input was too long")
 	} else if !validInput.MatchString(userMove) {
 		return "", fmt.Errorf("the input wasn't properly formatted")
 	} else {
-		return userMove[:4], nil // Remove the delimiter
+		return userMove[:3]+userMove[4:], nil // Remove the delimiter
 	}
 }
 
@@ -102,9 +105,9 @@ func main() {
 	i := 1
 	for ; i <= 8; i ++ {
 		k := i + 100
-		g.pieces[i] = Piece{pawn, Black, i}
+		g.pieces[i] = Piece{pawn, White, i}
 		g.board[1][i-1] = i
-		g.pieces[k] = Piece{pawn, White, k}
+		g.pieces[k] = Piece{pawn, Black, k}
 		g.board[6][i-1] = k
 	}
 	// Initialize other pieces according to their place on the board
@@ -112,9 +115,9 @@ func main() {
 	for j := 0; j <= 7; j ++ {
 		i ++
 		k := i + 100
-		g.pieces[i] = Piece{kinds[j], Black, i}
+		g.pieces[i] = Piece{kinds[j], White, i}
 		g.board[0][j] = i
-		g.pieces[k] = Piece{kinds[j], White, k}
+		g.pieces[k] = Piece{kinds[j], Black, k}
 		g.board[7][j] = k
 	}
 	// Empty squares contain pieces too
@@ -125,11 +128,10 @@ func main() {
 	turnColour := White
 	for continueGame {
 		fmt.Println(g.represent())
-		fmt.Println(turnColour)
-		input, err := getUserInput()
+		input, err := getUserInput(turnColour)
 		for err != nil {
 			fmt.Println(err)
-			input, err = getUserInput()
+			input, err = getUserInput(turnColour)
 		}
 		move := translateInput(input)
 		g.playMove(move)
