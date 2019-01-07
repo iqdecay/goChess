@@ -1,7 +1,9 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
+	"os"
 )
 
 type Color = int
@@ -45,6 +47,19 @@ func (g Game) represent() string {
 	return display
 }
 
+func GetUserInput() (userMove string, wrongFormat error) {
+	reader := bufio.NewReader(os.Stdin)
+	fmt.Printf("Enter the next %s move, under lnln form, where l is a letter and n a number, then press Enter:\n", c.colour)
+	userMove, err := reader.ReadString('\n')
+	if err != nil {
+		return "", fmt.Errorf("the input couldn't be read")
+	} else if len(userMove) != 5 {
+		return "", fmt.Errorf("the input wasn't properly formatted")
+	} else {
+		return userMove, nil
+	}
+}
+
 func main() {
 	// Initialize Piece types
 	knight := PieceKind{"H"}
@@ -55,7 +70,7 @@ func main() {
 	pawn := PieceKind{"P"}
 	g := &Game{pieces: make(map[int]Piece)}
 
-	// Initialize the pawns
+	// Initialize the pawns, 1xx pieces are White, 0xx pieces are Black
 	i := 1
 	for ; i <= 8; i ++ {
 		k := i + 100
@@ -64,7 +79,7 @@ func main() {
 		g.pieces[k] = Piece{pawn, White, k}
 		g.board[6][i-1] = k
 	}
-	// Initialize other pieces
+	// Initialize other pieces according to their place on the board
 	kinds := []PieceKind{tower, knight, bishop, queen, king, bishop, knight, tower}
 	for j := 0; j <= 7; j ++ {
 		i ++
@@ -114,6 +129,7 @@ func main() {
 	//}
 	//
 }
+
 //func TranslateMove(userMove string, lettersToInt map[byte]int) ([4]int, bool) {
 //	a := lettersToInt[userMove[0]]
 //	a--
@@ -131,18 +147,7 @@ func main() {
 //	}
 //	return translatedMove, false
 //}
-//
-//func GetUserInput(c Colour) (userMove string, wrongFormat bool) {
-//	reader := bufio.NewReader(os.Stdin)
-//	fmt.Printf("Enter the next %s move, under lnln form, where l is a letter and n a number, then press Enter:\n", c.colour)
-//	userMove, err := reader.ReadString('\n')
-//	if err == nil && len(userMove) == 5 { // The input takes the newline into account
-//		return userMove, false
-//	} else {
-//		return "", true
-//	}
-//}
-//
+
 //func playMove(move [4]int, board [8][8]int, boardRep [8][8]string, chessGame map[int]ChessPiece) ([8][8]int, [8][8]string) {
 //	originLetter := move[0]
 //	originNumber := move[1]
