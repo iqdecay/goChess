@@ -85,6 +85,25 @@ func TranslateMove(userMove string, lettersToInt map[byte]int) ([4]int, bool) {
 //	return board, boardRep
 //}
 
+func (g Game) represent() string {
+	positions := g.board.Positions
+	pieces := g.pieces
+	var display string
+	var str string
+	for _, line := range positions {
+		str = ""
+		for _, id := range line {
+			if id == 0 {
+				str += "_"
+			} else {
+				str += pieces[id].kind.symbol
+			}
+		}
+		display += "\n" + str
+	}
+	return display
+}
+
 func main() {
 	knight := PieceKind{"H"}
 	queen := PieceKind{"Q"}
@@ -100,9 +119,9 @@ func main() {
 	for ; i <= 8; i ++ {
 		k := i + 100
 		g.pieces[i] = Piece{pawn, Black, i}
-		g.board.Positions[0][i-1] = i
+		g.board.Positions[1][i-1] = i
 		g.pieces[k] = Piece{pawn, White, k}
-		g.board.Positions[7][i-1] = k
+		g.board.Positions[6][i-1] = k
 	}
 
 	// Initialize other pieces
@@ -111,9 +130,9 @@ func main() {
 		i ++
 		k := i + 100
 		g.pieces[i] = Piece{kinds[j], Black, i}
-		g.board.Positions[1][j] = i
+		g.board.Positions[0][j] = i
 		g.pieces[k] = Piece{kinds[j], White, k}
-		g.board.Positions[6][j] = k
+		g.board.Positions[7][j] = k
 	}
 	for i := 0; i < 400; i ++ {
 		if a, ok := g.pieces[i]; ok {
@@ -121,6 +140,7 @@ func main() {
 		}
 	}
 	fmt.Println(len(g.pieces))
+	fmt.Println(g.represent())
 	//
 	////--------------------- GAME INITIALIZATION------------------------------
 	//// We create the board that will hold the position of the pieces
