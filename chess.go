@@ -14,6 +14,7 @@ const (
 )
 
 type Game struct {
+	colour Color
 	board  [8][8]int
 	pieces map[int]Piece
 }
@@ -49,7 +50,7 @@ func (g Game) represent() string {
 
 func GetUserInput() (userMove string, wrongFormat error) {
 	reader := bufio.NewReader(os.Stdin)
-	fmt.Printf("Enter the next %s move, under lnln form, where l is a letter and n a number, then press Enter:\n", c.colour)
+	fmt.Printf("Enter the next move, under lnln form, where l is a letter and n a number, then press Enter:\n")
 	userMove, err := reader.ReadString('\n')
 	if err != nil {
 		return "", fmt.Errorf("the input couldn't be read")
