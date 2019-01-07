@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"regexp"
+	"strconv"
 )
 
 type Color = int
@@ -13,6 +14,8 @@ const (
 	White = iota
 	Black = iota
 )
+
+var lettersToInt = map[string]int{"a": 0, "b": 1, "c": 2, "d": 3, "e": 4, "f": 5, "g": 6, "h": 7}
 
 var validInput = regexp.MustCompile(`([a-h][1-8]){2}`)
 
@@ -66,6 +69,17 @@ func GetUserInput() (userMove string, wrongFormat error) {
 	}
 }
 
+func translateInput(i string) [4]int {
+	l1 := lettersToInt[i[0:1]]
+	l2 := lettersToInt[i[2:3]]
+	n1, _ := strconv.Atoi(i[1:2])
+	n2, _ := strconv.Atoi(i[3:4])
+	n1 --
+	n2 --
+	return [4]int{l1, n1, l2, n2}
+
+}
+
 func main() {
 	// Initialize Piece types
 	knight := PieceKind{"H"}
@@ -96,20 +110,19 @@ func main() {
 		g.board[7][j] = k
 	}
 
-	fmt.Println(len(g.pieces))
-	fmt.Println(g.represent())
-	////--------------------- GAME INITIALIZATION------------------------------
-	//Create the mapping between moves and coordinates
-	lettersToInt := make(map[byte]int)
-	letters := [8]byte{'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'}
-	for index, letter := range letters {
-		lettersToInt[letter] = index + 1
-	}
+	continueGame := true
+	turnColour := White
+	for continueGame {
+		fmt.Println(g.represent())
+		fmt.Println(turnColour)
+		input, err := GetUserInput()
+		for err != nil {
+			fmt.Println(err)
+			input, err = GetUserInput()
+		}
+		move := translateInput(input)
 
-	//fmt.Println(validInput.MatchString("a4a5"))
-	//fmt.Println(validInput.MatchString("4 44"))
-	a, b := GetUserInput()
-	fmt.Println(len(a), a, b)
+	}
 
 	////--------------------------- BEGINNING THE ACTUAL GAME ---------------------------------------
 	//
@@ -119,11 +132,6 @@ func main() {
 	//	PrintBoard(boardRep)
 	//	isMoveFalse := false
 	//	userMove, wrongFormat := GetUserInput(turnColour)
-	//	for wrongFormat {
-	//		fmt.Println("Please respect the move format !")
-	//		userMove, wrongFormat = GetUserInput(turnColour)
-	//	}
-	//
 	//	coordinateMove, isMoveFalse := TranslateMove(userMove, lettersToInt)
 	//	if isMoveFalse {
 	//		fmt.Println("Incorrect move entered !")
