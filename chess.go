@@ -124,48 +124,8 @@ func main() {
 
 	}
 
-	////--------------------------- BEGINNING THE ACTUAL GAME ---------------------------------------
-	//
-	//continueGame := true          // Will be false whenever there is a checkmate
-	//turnColour := Colour{"white"} // Holds the color of the next player to play a move
-	//for continueGame {
-	//	PrintBoard(boardRep)
-	//	isMoveFalse := false
-	//	userMove, wrongFormat := GetUserInput(turnColour)
-	//	coordinateMove, isMoveFalse := TranslateMove(userMove, lettersToInt)
-	//	if isMoveFalse {
-	//		fmt.Println("Incorrect move entered !")
-	//		continue
-	//	}
-	//	board, boardRep = playMove(coordinateMove, board, boardRep, chessGame)
-	//
-	//	//if ThereIsCheckmate(board) {
-	//	//continueGame = false
-	//	//fmt.Println("%s won the game !", turnColour)
-	//	//}
-	//	turnColour = Change(turnColour)
-	//
-	//}
-	//
 }
 
-//func TranslateMove(userMove string, lettersToInt map[byte]int) ([4]int, bool) {
-//	a := lettersToInt[userMove[0]]
-//	a--
-//	b, _ := strconv.Atoi(string(userMove[1]))
-//	b--
-//	c := lettersToInt[userMove[2]]
-//	c--
-//	d, _ := strconv.Atoi(string(userMove[3]))
-//	d--
-//	translatedMove := [4]int{a, b, c, d}
-//	for _, i := range translatedMove {
-//		if i < 0 || i > 7 {
-//			return translatedMove, true
-//		}
-//	}
-//	return translatedMove, false
-//}
 
 //func playMove(move [4]int, board [8][8]int, boardRep [8][8]string, chessGame map[int]ChessPiece) ([8][8]int, [8][8]string) {
 //	originLetter := move[0]
