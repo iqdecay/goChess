@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"regexp"
 )
 
 type Color = int
@@ -12,6 +13,8 @@ const (
 	White = iota
 	Black = iota
 )
+
+var validInput = regexp.MustCompile(`([a-h][1-8]){2}`)
 
 type Game struct {
 	colour Color
@@ -54,10 +57,12 @@ func GetUserInput() (userMove string, wrongFormat error) {
 	userMove, err := reader.ReadString('\n')
 	if err != nil {
 		return "", fmt.Errorf("the input couldn't be read")
-	} else if len(userMove) != 5 {
+	} else if len(userMove) > 5 {
+		return "", fmt.Errorf("the input was too long")
+	} else if !validInput.MatchString(userMove) {
 		return "", fmt.Errorf("the input wasn't properly formatted")
 	} else {
-		return userMove, nil
+		return userMove[:4], nil // Remove the delimiter
 	}
 }
 
@@ -100,6 +105,11 @@ func main() {
 	for index, letter := range letters {
 		lettersToInt[letter] = index + 1
 	}
+
+	//fmt.Println(validInput.MatchString("a4a5"))
+	//fmt.Println(validInput.MatchString("4 44"))
+	a, b := GetUserInput()
+	fmt.Println(len(a), a, b)
 
 	////--------------------------- BEGINNING THE ACTUAL GAME ---------------------------------------
 	//
