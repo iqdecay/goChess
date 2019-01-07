@@ -43,18 +43,14 @@ func (g Game) represent() string {
 	for _, line := range positions {
 		str = ""
 		for _, id := range line {
-			if id == 0 {
-				str += "_"
-			} else {
-				str += pieces[id].kind.symbol
-			}
+			str += pieces[id].kind.symbol
 		}
 		display += "\n" + str
 	}
 	return display
 }
 
-func GetUserInput() (userMove string, wrongFormat error) {
+func getUserInput() (string, error) {
 	reader := bufio.NewReader(os.Stdin)
 	fmt.Printf("Enter the next move, under lnln form, where l is a letter and n a number, then press Enter:\n")
 	userMove, err := reader.ReadString('\n')
@@ -70,6 +66,7 @@ func GetUserInput() (userMove string, wrongFormat error) {
 }
 
 func translateInput(i string) [4]int {
+	// Transform the move into slice indexes
 	l1 := lettersToInt[i[0:1]]
 	l2 := lettersToInt[i[2:3]]
 	n1, _ := strconv.Atoi(i[1:2])
@@ -120,16 +117,19 @@ func main() {
 		g.pieces[k] = Piece{kinds[j], White, k}
 		g.board[7][j] = k
 	}
+	// Empty squares contain pieces too
+	empty := PieceKind{"_"}
+	g.pieces[0] = Piece{kind: empty}
 
-	continueGame := true
+	continueGame := true // Remain true while no checkmate
 	turnColour := White
 	for continueGame {
 		fmt.Println(g.represent())
 		fmt.Println(turnColour)
-		input, err := GetUserInput()
+		input, err := getUserInput()
 		for err != nil {
 			fmt.Println(err)
-			input, err = GetUserInput()
+			input, err = getUserInput()
 		}
 		move := translateInput(input)
 		g.playMove(move)
