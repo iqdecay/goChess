@@ -70,14 +70,25 @@ func GetUserInput() (userMove string, wrongFormat error) {
 }
 
 func translateInput(i string) [4]int {
-	l1 := lettersToInt[i[0:1]] - 1
-	l2 := lettersToInt[i[2:3]] - 1
+	l1 := lettersToInt[i[0:1]]
+	l2 := lettersToInt[i[2:3]]
 	n1, _ := strconv.Atoi(i[1:2])
 	n2, _ := strconv.Atoi(i[3:4])
 	n1 --
 	n2 --
 	return [4]int{l1, n1, l2, n2}
 
+}
+func (g *Game) playMove(move [4]int) {
+	originLetter := move[0]
+	originNumber := move[1]
+	originNumber = 7 - originNumber // Whites are at the bottom of the screen
+	targetLetter := move[2]
+	targetNumber := move[3]
+	targetNumber = 7 - targetNumber
+	movedPieceId := g.board[originNumber][originLetter]
+	g.board[originNumber][originLetter] = 0
+	g.board[targetNumber][targetLetter] = movedPieceId
 }
 
 func main() {
@@ -121,28 +132,8 @@ func main() {
 			input, err = GetUserInput()
 		}
 		move := translateInput(input)
-
+		g.playMove(move)
+		fmt.Println(g.represent())
 	}
 
 }
-
-
-//func playMove(move [4]int, board [8][8]int, boardRep [8][8]string, chessGame map[int]ChessPiece) ([8][8]int, [8][8]string) {
-//	originLetter := move[0]
-//	originNumber := move[1]
-//	originNumber = 7 - originNumber
-//	targetLetter := move[2]
-//	targetNumber := move[3]
-//	targetNumber = 7 - targetNumber
-//	movedPieceId := board[originNumber][originLetter]
-//	movedPiece := chessGame[movedPieceId]
-//	if movedPiece.colour == "white" {
-//		boardRep[targetNumber][targetLetter] = strings.ToLower(movedPiece.chessPieceType.asciiRep)
-//	} else {
-//		boardRep[targetNumber][targetLetter] = movedPiece.chessPieceType.asciiRep
-//	}
-//	board[originNumber][originLetter] = 0
-//	boardRep[originNumber][originLetter] = "_"
-//	board[targetNumber][targetLetter] = movedPieceId
-//	return board, boardRep
-//}
