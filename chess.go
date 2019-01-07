@@ -70,8 +70,8 @@ func GetUserInput() (userMove string, wrongFormat error) {
 }
 
 func translateInput(i string) [4]int {
-	l1 := lettersToInt[i[0:1]]
-	l2 := lettersToInt[i[2:3]]
+	l1 := lettersToInt[i[0:1]] - 1
+	l2 := lettersToInt[i[2:3]] - 1
 	n1, _ := strconv.Atoi(i[1:2])
 	n2, _ := strconv.Atoi(i[3:4])
 	n1 --
